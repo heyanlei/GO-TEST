@@ -1,0 +1,7 @@
+rpc package有两大坑:
+
+rpc包里的rpc.Dial函数没有timeout, 系统默认是没有timeout的,所以在这里可能卡住.所以我们可以采用net包里的 net.DialTimeout函数.
+
+rpc包里默认使用gobCodec来编码解码, 这里io可能会卡住而不返回错误,所以我们要自己编写加入timeout的codec. 注意server这边读写都有timeout,
+但是client这边只有写有timeout,
+因为读的话并不能预知任务完成的时间. 于是就有了接下来这个版本的rpc,几十万个任务下来没有任何问题.
